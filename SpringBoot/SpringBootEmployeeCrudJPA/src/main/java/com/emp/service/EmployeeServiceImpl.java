@@ -1,13 +1,13 @@
 package com.emp.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.emp.dao.EmployeeDao;
 import com.emp.entity.Employee;
+import com.emp.exceptions.EmployeeNotFound;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
@@ -23,8 +23,13 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	@Override
-	public Optional<Employee> findEmpById(Integer empId) {
-		return empDao.findById(empId);
+	public Employee findEmpById(Integer empId) {
+		//return empDao.findById(empId);
+		
+		if(empDao.findOne(empId) == null)
+			 throw  new EmployeeNotFound("User Doesn't exist");
+		else 
+			return empDao.findOne(empId);
 	}
 
 	@Override
@@ -34,7 +39,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 	@Override
 	public String updateEmp(Employee employee) {
-		boolean result=empDao.existsById(employee.getId());
+		//boolean result=empDao.existsById(employee.getId());
+		boolean result=empDao.exists(employee.getId());
 		if(result)
 		{
 			empDao.save(employee);
@@ -48,15 +54,26 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 	@Override
 	public String deleteEmp(Integer empId) {
-		boolean result=empDao.existsById(empId);
+		boolean result=empDao.exists(empId);
 		if(result)
 		{
-			empDao.deleteById(empId);
+			//empDao.deleteById(empId);
+			empDao.delete(empId);
 			return "Deleted Successfully";
 		}
 		else{
 			return "Id Not Found";
 		}
+	}
+
+	@Override
+	public String fetchName(Integer empId) {
+		
+		if(empDao.fetchName(empId) == null)
+			 throw  new EmployeeNotFound("User Doesn't exist");
+		else 
+			return empDao.fetchName(empId);
+		
 	}
 	
 	

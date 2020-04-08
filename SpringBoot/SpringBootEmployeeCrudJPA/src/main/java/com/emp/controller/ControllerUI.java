@@ -1,11 +1,13 @@
 package com.emp.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.emp.entity.Employee;
+import com.emp.exceptions.EmployeeNotFound;
 import com.emp.service.EmployeeService;
 
 @RestController
 @RequestMapping(value="/Employee")
-@CrossOrigin(origins="http://localhost:4200")
+//@CrossOrigin(origins="http://localhost:4200")
+@CrossOrigin(origins="http://localhost:2020")
 public class ControllerUI {
 	
 	@Autowired
@@ -32,7 +36,7 @@ public class ControllerUI {
 	}
 	
 	@GetMapping("/findById/{empId}")
-	public Optional<Employee> findEmpById(@PathVariable Integer empId) {
+	public Employee findEmpById(@PathVariable Integer empId) {
 		return empservice.findEmpById(empId);
 	}
 	
@@ -52,7 +56,15 @@ public class ControllerUI {
 		return empservice.deleteEmp(empId);
 	}
 	
+	@GetMapping("/view/{empId}")
+	public String fetchName(@PathVariable Integer empId)
+	{
+		return empservice.fetchName(empId);
+	}
 	
-	
-	
+	 @SuppressWarnings({ "unchecked", "rawtypes" })
+	 @ExceptionHandler(EmployeeNotFound.class) public ResponseEntity
+	  userNotFound(EmployeeNotFound e) { 
+		 return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND); 
+		 }
 }
